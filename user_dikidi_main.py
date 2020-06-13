@@ -82,7 +82,7 @@ async def callback_handler(callback_query: types.CallbackQuery, state: FSMContex
     await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
     await bot.send_message(callback_query.message.chat.id,
                            f"*Специалист:* _{data['master'][1]}_\n*Услуга*: _{service[1]}_\n\n"
-                           f"*Доступное врямя:*\n{time_text}\n[Онлайн-запись](https://beauty.dikidi.net/ru/record/14998)",
+                           f"*Доступное врямя:*\n{time_text}\n[Онлайн-запись](https://beauty.dikidi.net/ru/record/{c.service})",
                            parse_mode="Markdown", disable_web_page_preview=True)
 
     await bot.send_message(callback_query.message.chat.id, "*Укажите нужную дату*\n\nНапример, если вы хотите записаться __30 июня__, "
@@ -238,14 +238,14 @@ async def get_updates(res):
                 send = True
     conn.close()
     key = types.InlineKeyboardMarkup()
-    key.add(types.InlineKeyboardButton("Онлайн-запись", "https://beauty.dikidi.net/ru/record/14998"))
+    key.add(types.InlineKeyboardButton("Онлайн-запись", f"https://beauty.dikidi.net/ru/record/{c.service}"))
     if send:
         try: await bot.send_message(user_id, f"{text}\n*Специалист:* {master}\n*Услуга:* {service}\n\n",
                                     parse_mode="Markdown", reply_markup=key)
         except utils.exceptions.BotBlocked: pass
 
 
-async def check_loop():
+async def check_updates_loop():
     while True:
         conn = mysql.connector.connect(host=c.host, user=c.user, passwd=c.password, database=c.db)
         cursor = conn.cursor(buffered=True)
@@ -260,5 +260,5 @@ async def check_loop():
 
 
 if __name__ == '__main__':
-    dp.loop.create_task(check_loop())
+    dp.loop.create_task(check_updates_loop())
     executor.start_polling(dp, skip_updates=True)

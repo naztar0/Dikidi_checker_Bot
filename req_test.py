@@ -1,10 +1,11 @@
 import requests
 import json
 import datetime
+import constants as c
 
 
 def masters():
-    url = "https://beauty.dikidi.net/ru/ajax/newrecord/to_master_get_masters/?company_id=14998"
+    url = f"https://beauty.dikidi.net/ru/ajax/newrecord/to_master_get_masters/?company_id={c.service}"
     json_get = requests.get(url)
     data = json.loads(json_get.text)
     result = {}
@@ -14,8 +15,8 @@ def masters():
 
 
 def services(master):
-    url = "https://beauty.dikidi.net/mobile/ajax/newrecord/company_services/?lang=ru&company=14998&master={master}&share="
-    json_get = requests.get(url.format(master=master))
+    url = f"https://beauty.dikidi.net/mobile/ajax/newrecord/company_services/?lang=ru&company={c.service}&master={master}&share="
+    json_get = requests.get(url)
     data = json.loads(json_get.text)
     result = {}
     list_num = None
@@ -29,8 +30,9 @@ def services(master):
 def get_date(service, master):
     now_date = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d")
     next_date = datetime.datetime.strftime(datetime.datetime.now() + datetime.timedelta(days=70), "%Y-%m-%d")
-    url = "https://beauty.dikidi.net/en/ajax/newrecord/get_dates_true/?company_id=14998&services_id%5B%5D={service_id}&master_id={master}&date_from={f}&date_to={n}"
-    json_get = requests.get(url.format(service_id=service, master=master, f=now_date, n=next_date))
+    url = f"https://beauty.dikidi.net/en/ajax/newrecord/get_dates_true/?company_id={c.service}" \
+          f"&services_id%5B%5D={service}&master_id={master}&date_from={now_date}&date_to={next_date}"
+    json_get = requests.get(url)
     data = json.loads(json_get.text)
     result = []
     try:
@@ -42,8 +44,8 @@ def get_date(service, master):
 
 
 def get_time(date, service, master):
-    url = "https://beauty.dikidi.net/ru/ajax/newrecord/get_masters/?company_id=14998&date={date}&services_id%5B%5D={service_id}&master_id={master}&is_show_all_times=0"
-    json_get = requests.get(url.format(date=date, service_id=service, master=master))
+    url = f"https://beauty.dikidi.net/ru/ajax/newrecord/get_masters/?company_id={c.service}&date={date}&services_id%5B%5D={service}&master_id={master}&is_show_all_times=0"
+    json_get = requests.get(url)
     data = json.loads(json_get.text)
     result = []
     for time in data["times"][str(master)]:
